@@ -367,7 +367,8 @@ void SaveLoadScreen::draw(Host &host, const std::function<void(int)> &choose, co
 
 // ---------------------------------------------------------------------------------------
 // §10 Options (rich4_ui_options.asm, Data 3). Only settings the native port supports are
-// live: speed, music on/off (with song preview) and sound on/off. The rest is greyed.
+// live: speed, 動畫過程, music on/off (with song preview), sound on/off and the 視窗 view mode.
+// The rest is greyed.
 
 void OptionsScreen::draw(Host &host, const OptionsActions &actions) {
     auto &frame = host.frame;
@@ -417,6 +418,9 @@ void OptionsScreen::draw(Host &host, const OptionsActions &actions) {
     if (state_.animation) // fcn_0040fd49: cfg+1 on mark at ref_00474c22/26 = (98, 50)
         frame.picture('d', 3, 9, ox + 98, oy + 50);
     frame.picture('d', 3, 9, ox + 98, oy + 146); // the native game always autosaves daily
+    // 視窗 (cfg+5): fcn_0040fd49 marks the view at (218, ref_00474c92[view]) = 218/250/281.
+    constexpr std::array<int, 3> view_mark_y{218, 250, 281};
+    frame.picture('d', 3, 9, ox + 218, oy + view_mark_y[std::min(state_.view, 2U)]);
     constexpr std::array<const char *, 8> songs{"1.星際總動員", "2.重回侏儸紀", "3.夢幻伊甸園", "4.打拼為將來",
                                                 "5.椰林風情畫", "6.浪漫月世界", "7.熱情的夏夜", "8.漫步星空下"};
     for (int i = 0; i < 8; ++i) {
@@ -458,6 +462,10 @@ void OptionsScreen::draw(Host &host, const OptionsActions &actions) {
     hit(host, ids::options_music, at(4, 74, 89, 105), click_sound, [this] { state_.music = !state_.music; });
     hit(host, ids::options_sound, at(4, 106, 89, 137), click_sound, [this] { state_.sound = !state_.sound; });
     hit(host, ids::options_animation, at(4, 42, 160, 73), click_sound, [this] { state_.animation = !state_.animation; });
+    // Hit rectangles 13..15 of ref_00474b92; fcn_004107f3 stores (index - 13) in cfg+5.
+    for (int i = 0; i < 3; ++i)
+        hit(host, ids::options_view + i, at(217, 214 + 32 * i, 324, 236 + 32 * i), click_sound,
+            [this, i] { state_.view = unsigned(i); });
     hit(host, ids::options_song, at(18, 226, 177, 346), click_sound, [actions, frame_pointer] {
         const int index = std::clamp((frame_pointer->pointer_y - oy - 226) / 15, 0, 7);
         if (actions.play_song)

@@ -1203,7 +1203,8 @@ class Application {
             last_screen_ = screen_;
             pad_.close();
             if (screen_ == Screen::settings)
-                options_screen_.open({speed_, audio_->music_enabled(), sound_effects_, interactive_minigames_},
+                options_screen_.open({speed_, audio_->music_enabled(), sound_effects_, interactive_minigames_,
+                                      main_screen_.view_mode()},
                                      session_ != nullptr);
             if (screen_ == Screen::wealth && session_)
                 info_.open(session_->world().header.current_player);
@@ -1281,6 +1282,7 @@ class Application {
                                audio_->set_music(state.music);
                            sound_effects_ = state.sound;
                            interactive_minigames_ = state.animation; // MINIGAMES: 動畫過程 (cfg+1)
+                           main_screen_.set_view_mode(state.view);   // 視窗 (cfg+5)
                            if (session_)
                                session_->set_interactive_mini_games(state.animation && !options_.auto_rounds);
                        },
