@@ -93,7 +93,7 @@ Side bug (report only): the notices say `使用免费卡` and `嫁祸`, but `obs
 | 認輸投降 (surrender) | Greyed out (menus.cpp:392-399); no core API | Resign = bankrupt the player, behind a confirm dialog | P2 |
 | Lottery draw show | Only the log notice `彩票开奖：N` (game.cpp:3309); the winner's cash changes silently | Draw event plus the Panel 14/16/17 FLC (`rich4_ui_letou` kaijiang) | P2 |
 | Interactive minigames | Auto-reward (STATUS:43) | Port later | P3 |
-| Options: 動畫過程, 自動存檔 toggle, 樂曲, 日/月曆, 縮小地圖 | Inert or greyed (menus.cpp:370-420) | Low value on a phone | P3 |
+| Options: 自動存檔 toggle | Inert (menus.cpp); 動畫過程, 樂曲 and the 視窗 view mode (日、月曆 / 縮小地圖 / 組合畫面) now work. 視窗 is the only way to change the view on touch screens; the desktop also has the `V` key | Low value on a phone | P3 |
 | Voices for cards/tools, loop sounds, toll blinking, hospital/prison FLC | STATUS:19 | Polish | P3 |
 | Save/load (AUTO + 5 slots), full map | Done (native_game.cpp:616-680; main_screen.cpp:632-661). main-screen.md §2/§9 is out of date | Update the doc | — |
 
