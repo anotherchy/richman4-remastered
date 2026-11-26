@@ -118,6 +118,7 @@ Options arguments(int argc, char **argv) {
     Options options;
     options.assets = RICH4_DEFAULT_ASSETS;
     options.save_directory = home / "Library/Application Support/Rich4Native/saves";
+    fs::path bundled_font;
 #ifdef RICH4_MOBILE
     // Android: extracted APK assets; iOS: the app bundle. Bundled/system font, SDL pref path.
     const auto platform = mobile_platform::prepare();
@@ -125,6 +126,16 @@ Options arguments(int argc, char **argv) {
     options.font = platform.font;
     options.save_directory = platform.save_directory;
     options.touch = true;
+#else
+    // A packaged Mac app (scripts/package_mac_app.sh) carries the game files and a font in its
+    // Resources; SDL_GetBasePath() is that directory for an app bundle.
+    if (const char *base = SDL_GetBasePath()) {
+        const fs::path resources(base);
+        if (fs::is_regular_file(resources / "game/Data.mkf"))
+            options.assets = resources / "game";
+        if (fs::is_regular_file(resources / "NotoSerifCJKtc-Regular.otf"))
+            bundled_font = resources / "NotoSerifCJKtc-Regular.otf";
+    }
 #endif
     for (int index = 1; index < argc; ++index) {
         const std::string argument = argv[index];
@@ -211,10 +222,11 @@ Options arguments(int argc, char **argv) {
             fs::path("/Applications/Microsoft Word.app/Contents/Resources/DFonts/mingliu.ttc"),
             home / "Library/Containers/org.boxedwine/Data/Library/Application "
                    "Support/Boxedwine/Rich4/root/home/username/.wine/drive_c/windows/Fonts/mingliu.ttc",
+            bundled_font,
             fs::path("/System/Library/Fonts/PingFang.ttc"),
             fs::path("/System/Library/Fonts/STHeiti Medium.ttc")};
         for (const auto &path : candidates)
-            if (fs::is_regular_file(path)) {
+            if (!path.empty() && fs::is_regular_file(path)) {
                 options.font = path;
                 break;
             }

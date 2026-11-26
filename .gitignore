@@ -11,3 +11,4 @@ __pycache__/
 /CMakeUserPresets.json
 /game-assets/*
 !/game-assets/README.md
+/dist/
